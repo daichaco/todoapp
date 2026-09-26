@@ -51,6 +51,8 @@ const isOverdue = (t: Todo, now: Date) => {
   return end.getTime() < now.getTime();
 };
 
+// サンプルデータは開発時（npm run dev）だけ使う
+const IS_DEV = process.env.NODE_ENV === "development";
 const ALL = "all";
 const TRASH = "trash";
 
@@ -161,13 +163,15 @@ export default function Home() {
       if (Array.isArray(items) && items.length > 0) {
         // テーマ導入前のデータは「一般」に入れる
         ts = [{ id: crypto.randomUUID(), name: "一般" }];
-      } else {
+      } else if (IS_DEV) {
         const sample = makeSample();
         setThemes(sample.themes);
         setTodos(sample.todos);
         setActiveId(sample.themes[0].id);
         setLoaded(true);
         return;
+      } else {
+        ts = [{ id: crypto.randomUUID(), name: "一般" }];
       }
     }
     setThemes(ts);
@@ -1322,11 +1326,13 @@ export default function Home() {
       </>
       )}
 
-      <footer className="footer">
-        <button type="button" className="icon wide" onClick={addSample}>
-          サンプルデータを追加
-        </button>
-      </footer>
+      {IS_DEV && (
+        <footer className="footer">
+          <button type="button" className="icon wide" onClick={addSample}>
+            サンプルデータを追加
+          </button>
+        </footer>
+      )}
     </main>
   );
 }
